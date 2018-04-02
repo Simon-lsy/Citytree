@@ -2,8 +2,19 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pylab import mpl
+
+mpl.rcParams['font.sans-serif'] = ['SimHei']  # 指定默认字体
+mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
 
 df = pd.read_csv('citytree_type_1990_to_2015.csv')
+
+Attribute_name_list = list()
+for attr in range(0, 13):
+    attribute_name = list(df)[attr + 3][4:]
+    Attribute_name_list.append(attribute_name)
+
+print(Attribute_name_list)
 
 # df['Growth'] = (df['BA2015'] - df['BA1990']) / df['BA1990']
 
@@ -32,6 +43,6 @@ plt.plot(x, ba, label='BA')
 # plt.plot(x, attr_list[1])
 # plt.plot(x, attr_list[2])
 for i in range(0, 13):
-    plt.plot(x, attr_list[i], label=i)
+    plt.plot(x, attr_list[i], label=Attribute_name_list[i])
 plt.legend(loc='upper left', frameon=False)
 plt.show()
