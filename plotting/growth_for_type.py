@@ -26,8 +26,10 @@ for type in type_list:
     type_growth = list()
     BA_growth = list()
     for i in range(0, len(new_df)):
-        if new_df['BA1990'].values[i] == 0:
+        if new_df['BA1990'].values[i] == 0 and new_df['BA2000'].values[i] == 0:
             BA_growth.append(0)
+        elif new_df['BA1990'].values[i] == 0 and new_df['BA2000'].values[i] != 0:
+            BA_growth.append((new_df['BA2015'].values[i] - new_df['BA2000'].values[i]) / new_df['BA2000'].values[i])
         else:
             BA_growth.append((new_df['BA2015'].values[i] - new_df['BA1990'].values[i]) / new_df['BA1990'].values[i])
 
@@ -37,8 +39,12 @@ for type in type_list:
     for attr_name in Attribute_name_list:
         attribute_growth = list()
         for i in range(0, len(new_df)):
-            if new_df['1990' + attr_name].values[i] == 0:
+            if new_df['1990' + attr_name].values[i] == 0 and new_df['2000' + attr_name].values[i] == 0:
                 attribute_growth.append(0)
+            elif new_df['1990' + attr_name].values[i] == 0 and new_df['2000' + attr_name].values[i] != 0:
+                attribute_growth.append(
+                    (new_df['2015' + attr_name].values[i] - new_df['2000' + attr_name].values[i]) /
+                    new_df['2000' + attr_name].values[i])
             else:
                 attribute_growth.append(
                     (new_df['2015' + attr_name].values[i] - new_df['1990' + attr_name].values[i]) /
@@ -53,21 +59,28 @@ Attribute_name_list.insert(0, 'BA')
 Attribute_name_list[5] = '投资总额'
 Attribute_name_list[6] = '零售总额'
 Attribute_name_list[13] = '可支配收入'
-# print(len(type_growth_list))
-for type_growth in type_growth_list:
-    # print(type_growth.index)
-    print(type_growth_list.index(type_growth))
-    type_growth_index = type_growth_list.index(type_growth)
-    type = type_list[int(type_growth_index)]
-    plt.plot(range(0, 14), type_growth, 'o',
-             label=type_dict[str(type)])
-    # plt.annotate(type_growth[0], xy=(0, type_growth[0]), xytext=(0, type_growth[0]+500),
-    #              arrowprops=dict(facecolor='black', shrink=0.05),
-    #              )
-    plt.legend(loc='best', frameon=False)
-    plt.xlabel('BA & attribute')
-    plt.ylabel('Growth')
-    plt.xticks(range(0, 14), Attribute_name_list)
-    plt.title(type_dict['1'] + ':Growth-Attribute')
+
+size = 14
+x = np.arange(size)
+
+total_width, n = 0.9, 4
+width = total_width / n
+x = x - (total_width - width) / 2
+
+print(len(type_growth_list[1]))
+
+for i in range(0, 4):
+    type = type_list[i]
+    plt.bar(x + i * width, type_growth_list[i], width=width, label=type_dict[str(type)])
+    # 设置数字标签
+    for a, b in zip(x + i * width, type_growth_list[i]):
+        plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
+
+plt.xlabel('BA & attribute')
+plt.ylabel('Growth')
+plt.xticks(range(0, 14), Attribute_name_list)
+plt.legend()
+plt.title('类型增长率')
+
 
 plt.show()
