@@ -80,22 +80,23 @@ def k_means_clust(data, num_clust, num_iter, w=5):
 # print(type(data))
 
 df = pd.read_csv('new_data.csv')
-data = df.iloc[:, 3:].values
-print(type(data))
-# for i in data:
-#     plt.plot(i)
-# plt.show()
+# new_df = df[df.CityID != 3536].copy()
+new_df = df[df.CityID != 3536].copy()
+print(len(new_df))
+data = new_df.iloc[:, 2:].values
+# print(type(data))
+for i in data:
+    plt.plot(i)
+plt.show()
 
 sum_distance_list = list()
 min_centroids_distance = list()
-for num_clust in range(3, 10):
+for num_clust in range(2, 10):
     data_target = np.zeros(len(data))
-    # print(data_target)
     centroids, assignments = k_means_clust(data, num_clust, 10, 4)
     # print(centroids)
     # print(assignments)
     for key in assignments:
-        # print(key)
         for index in assignments[key]:
             data_target[index] = key
     # print(data_target)
@@ -103,7 +104,7 @@ for num_clust in range(3, 10):
     for key in assignments:
         for index in assignments[key]:
             distance = DTWDistance(data[index], centroids[key], w=5)
-            sum_distance += distance * len(assignments[key])
+            sum_distance += distance
 
     print(sum_distance / len(data))
     sum_distance_list.append(sum_distance / len(data))
@@ -123,22 +124,32 @@ for num_clust in range(3, 10):
 #         plt.plot(i)
 #     plt.show()
 
-plt.plot(range(3, 10), sum_distance_list)
-
+plt.plot(range(2, 10), sum_distance_list)
 plt.show()
 
-plt.plot(range(3, 10), min_centroids_distance)
+plt.plot(range(2, 10), min_centroids_distance)
 plt.show()
+
+validity = list()
+for s, m in zip(sum_distance_list, min_centroids_distance):
+    v = s / m
+    validity.append(v)
+
+print(validity)
+plt.plot(range(2, 10), validity)
+plt.show()
+
 
 # data_target = np.zeros(len(data))
-# centroids, assignments = k_means_clust(data, 4, 10, 4)
+# centroids, assignments = k_means_clust(data, 8, 10, 4)
 # for key in assignments:
-#     # print(key)
+#     type_list = list()
 #     for index in assignments[key]:
-#         data_target[index] = key
-
-# print(centroids[0])
-# print(len(centroids[0]))
+#         # data_target[index] = key
+#         type_list.append(data[index])
+#     for i in type_list:
+#         plt.plot(i)
+#     plt.show()
 
 
 # df['type'] = data_target
