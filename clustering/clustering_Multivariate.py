@@ -2,6 +2,7 @@ import matplotlib.pylab as plt
 import numpy as np
 import random
 import pandas as pd
+import math
 
 
 def cluster(distances, k):
@@ -91,19 +92,33 @@ def get_sum_distance(data_target):
     return sum_distance
 
 
+# df = pd.read_csv('normalization.csv')
+# new_df = df[df.CityID != 3536].copy()
+
 df = pd.read_csv('normalization.csv')
-new_df = df[df.CityID != 3536].copy()
-data = new_df.iloc[:, 3:].values
+data = df.iloc[:, 3:].values
+
+# print(len(data[0]))
+# for i in range(0, len(data)):
+#     for j in range(0, len(data[0])):
+#         sorted_year_attr = data[:, j]
+#         if data[i][j] <= 0:
+#             for attr in sorted_year_attr:
+#                 if attr > 0:
+#                     data[i][j] = attr
+#                     break
+#         data[i][j] = math.log(data[i][j])
 print(len(data))
 print(type(data))
-new_data = data.reshape(199, 26, 13)
+new_data = data.reshape(200, 26, 13)
+print(new_data)
 
 print(np.shape(new_data))
 
 # Calculate distances using DTW
 distances = np.zeros((np.shape(new_data)[0], np.shape(new_data)[0]))
 # window size
-w = 10
+w = 5
 
 for ind, i in enumerate(new_data):
     for c_ind, j in enumerate(new_data):
@@ -117,12 +132,16 @@ print('Distances calculated')
 print(distances)
 sum_distance_list = list()
 min_centroids_distance_list = list()
-for num_cluster in range(2, 10):
+cluster_list = list()
+centroids_list = list()
+for num_cluster in range(5, 6):
     clusters, curr_medoids = cluster(distances, num_cluster)
     print('Mediods are :')
     print(curr_medoids)
     print('Cluster assigments : ')
     print(clusters)
+    cluster_list.append(clusters)
+    centroids_list.append(curr_medoids)
     centroids_distance = get_min_centroids_distance(curr_medoids)
     # print(min(centroids_distance))
     min_centroids_distance_list.append(min(centroids_distance))
@@ -134,19 +153,34 @@ print('--------------------------')
 print(min_centroids_distance_list)
 print(sum_distance_list)
 
-plt.plot(range(2, 10), sum_distance_list)
-plt.show()
-
-plt.plot(range(2, 10), min_centroids_distance_list)
-plt.show()
+# plt.plot(range(2, 10), sum_distance_list)
+# plt.show()
+#
+# plt.plot(range(2, 10), min_centroids_distance_list)
+# plt.show()
 
 # num_cluster = 6 might be the best
 
 # validity = list()
 # for s, m in zip(sum_distance_list, min_centroids_distance_list):
-#     v = m/s
+#     v = s / m
 #     validity.append(v)
 #
 # print(validity)
 # plt.plot(range(2, 10), validity)
 # plt.show()
+
+# min_validity_index = validity.index(min(validity))
+print(cluster_list[0])
+print(centroids_list[0])
+# df['type'] = cluster_list[min_validity_index]
+# df.to_csv('normalization_type.csv', encoding="utf_8_sig")
+
+type_df = pd.read_csv('citytree_type_1990_to_2015.csv')
+type_df['new_type'] = cluster_list[0]
+new_type = type_df['new_type']
+type_df.drop(labels=['Unnamed: 0'], axis=1, inplace=True)
+type_df.drop(labels=['Unnamed: 0.1'], axis=1, inplace=True)
+type_df.drop(labels=['new_type'], axis=1, inplace=True)
+type_df.insert(1, 'new_type', new_type)
+type_df.to_csv('normalization_type.csv', encoding="utf_8_sig")

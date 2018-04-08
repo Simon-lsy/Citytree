@@ -2,6 +2,7 @@ import matplotlib.pylab as plt
 import numpy as np
 import random
 import pandas as pd
+import math
 from sklearn import metrics
 from sklearn.metrics import pairwise_distances
 from sklearn import datasets
@@ -81,9 +82,32 @@ def k_means_clust(data, num_clust, num_iter, w=5):
 
 df = pd.read_csv('new_data.csv')
 # new_df = df[df.CityID != 3536].copy()
-new_df = df[df.CityID != 3536].copy()
-print(len(new_df))
-data = new_df.iloc[:, 2:].values
+new_df = df[(df.CityID != 3536) & (df.CityID != 3489) & (df.CityID != 3326)].copy()
+# print(len(new_df))
+data = df.iloc[:, 2:].values
+# print(data)
+data_list = list()
+for row in data:
+    for elem in row:
+        data_list.append(elem)
+
+# print(data_list)
+min_data = min(data_list)
+max_data = max(data_list)
+print(min_data)
+print(max_data)
+print(len(data_list))
+sp = (sorted(data_list)[1] - min_data) / (max_data - min_data)
+for i in range(0, len(data)):
+    for j in range(0, 26):
+        data[i][j] = (data[i][j] - min_data) / (max_data - min_data)
+        if data[i][j] != 0:
+            data[i][j] = math.log(data[i][j])
+        else:
+            data[i][j] = math.log(sp)
+
+print(data)
+
 # print(type(data))
 for i in data:
     plt.plot(i)
@@ -91,15 +115,19 @@ plt.show()
 
 sum_distance_list = list()
 min_centroids_distance = list()
+data_target_list = list()
+centroids_list = list()
 for num_clust in range(2, 10):
     data_target = np.zeros(len(data))
     centroids, assignments = k_means_clust(data, num_clust, 10, 4)
-    # print(centroids)
-    # print(assignments)
+    print(centroids)
+    centroids_list.append(centroids)
+    print(assignments)
     for key in assignments:
         for index in assignments[key]:
             data_target[index] = key
     # print(data_target)
+    data_target_list.append(data_target)
     sum_distance = 0
     for key in assignments:
         for index in assignments[key]:
@@ -151,7 +179,17 @@ plt.show()
 #         plt.plot(i)
 #     plt.show()
 
-
-# df['type'] = data_target
+min_validity_index = validity.index(min(validity))
+print(centroids_list[min_validity_index])
+df['type'] = data_target_list[min_validity_index]
 #
-# df.to_csv('new_data_type.csv', encoding="utf_8_sig")
+df.to_csv('new_data_type.csv', encoding="utf_8_sig")
+
+type_df = pd.read_csv('citytree_type_1990_to_2015.csv')
+type_df['new_type'] = data_target_list[min_validity_index]
+new_type = type_df['new_type']
+type_df.drop(labels=['Unnamed: 0'], axis=1, inplace=True)
+type_df.drop(labels=['Unnamed: 0.1'], axis=1, inplace=True)
+type_df.drop(labels=['new_type'], axis=1, inplace=True)
+type_df.insert(1, 'new_type', new_type)
+type_df.to_csv('new_type.csv', encoding="utf_8_sig")
