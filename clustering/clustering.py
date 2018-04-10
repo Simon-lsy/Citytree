@@ -106,7 +106,7 @@ for i in range(0, len(data)):
         else:
             data[i][j] = math.log(sp)
 
-print(data)
+# print(data)
 
 # print(type(data))
 for i in data:
@@ -117,7 +117,7 @@ sum_distance_list = list()
 min_centroids_distance = list()
 data_target_list = list()
 centroids_list = list()
-for num_clust in range(2, 10):
+for num_clust in range(2, 8):
     data_target = np.zeros(len(data))
     centroids, assignments = k_means_clust(data, num_clust, 10, 4)
     print(centroids)
@@ -152,10 +152,10 @@ for num_clust in range(2, 10):
 #         plt.plot(i)
 #     plt.show()
 
-plt.plot(range(2, 10), sum_distance_list)
+plt.plot(range(2, 8), sum_distance_list)
 plt.show()
 
-plt.plot(range(2, 10), min_centroids_distance)
+plt.plot(range(2, 8), min_centroids_distance)
 plt.show()
 
 validity = list()
@@ -164,7 +164,7 @@ for s, m in zip(sum_distance_list, min_centroids_distance):
     validity.append(v)
 
 print(validity)
-plt.plot(range(2, 10), validity)
+plt.plot(range(2, 8), validity)
 plt.show()
 
 

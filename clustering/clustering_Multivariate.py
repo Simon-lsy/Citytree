@@ -134,7 +134,7 @@ sum_distance_list = list()
 min_centroids_distance_list = list()
 cluster_list = list()
 centroids_list = list()
-for num_cluster in range(5, 6):
+for num_cluster in range(6, 7):
     clusters, curr_medoids = cluster(distances, num_cluster)
     print('Mediods are :')
     print(curr_medoids)
@@ -160,7 +160,6 @@ print(sum_distance_list)
 # plt.show()
 
 # num_cluster = 6 might be the best
-
 # validity = list()
 # for s, m in zip(sum_distance_list, min_centroids_distance_list):
 #     v = s / m
@@ -183,4 +182,4 @@ type_df.drop(labels=['Unnamed: 0'], axis=1, inplace=True)
 type_df.drop(labels=['Unnamed: 0.1'], axis=1, inplace=True)
 type_df.drop(labels=['new_type'], axis=1, inplace=True)
 type_df.insert(1, 'new_type', new_type)
-type_df.to_csv('normalization_type.csv', encoding="utf_8_sig")
+type_df.to_csv('normalization_type_6.csv', encoding="utf_8_sig")
