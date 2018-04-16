@@ -8,8 +8,9 @@ from pylab import mpl
 mpl.rcParams['font.sans-serif'] = ['SimHei']  # 指定默认字体
 mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
 
-df = pd.read_csv('centriod_data_6.csv')
+df = pd.read_csv('centriod_data_5.csv')
 index = df['CityID'].values
+city_name = df['CITYNAME'].values
 year_attr = list(df)[3:16]
 attr_list = list()
 for attr in year_attr:
@@ -34,17 +35,19 @@ attr_list[12] = '可支配收入'
 size = 13
 x = np.arange(size)
 
-centriod_num = 6
+centriod_num = 5
 
 total_width, n = 0.9, centriod_num
 width = total_width / n
 x = x - (total_width - width) / 2
 
 for i in range(0, centriod_num):
-    plt.bar(x + i * width, [x[i] for x in growth_1990_to_2015_list], width=width, label=index[i])
+    plt.bar(x + i * width, [x[i] for x in growth_1990_to_2015_list], width=width, label=city_name[i])
     for a, b in zip(x + i * width, [x[i] for x in growth_1990_to_2015_list]):
         plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
 
+plt.xlabel("Attribute")
+plt.ylabel("Growth")
 plt.legend()
 plt.xticks(range(0, 13), attr_list)
 plt.show()

@@ -5,9 +5,9 @@ import pandas as pd
 import math
 
 
-df = pd.read_csv('normalization_type_4.csv')
+df = pd.read_csv('normalization_type_5.csv')
 
-centriod_num = 4
+centriod_num = 5
 
 index = df.iloc[:, 0].values
 # print(index)
@@ -68,6 +68,7 @@ plt.show()
 
 citytree_area_df = pd.read_csv('citytree_area_1990_to_2015.csv')
 centriod_df = citytree_area_df[citytree_area_df['CityID'].isin(centriod)]
+centriod_df['CITYNAME'] = city_name
 print('-------------')
 print(centriod_df)
 centriod_df.to_csv('centriod_data_' + str(centriod_num) + '.csv', encoding="utf_8_sig")
