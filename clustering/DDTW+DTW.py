@@ -124,11 +124,9 @@ print(len(DDTW_data))
 print(len(DDTW_data[0]))
 
 # Calculate distances using DTW
-distances = np.zeros((np.shape(new_data)[0], np.shape(new_data)[0]))
+distances_DTW = np.zeros((np.shape(new_data)[0], np.shape(new_data)[0]))
 # window size
 w = 5
-
-new_data = DDTW_data
 
 for ind, i in enumerate(new_data):
     for c_ind, j in enumerate(new_data):
@@ -136,16 +134,41 @@ for ind, i in enumerate(new_data):
         # Find sum of distances along each dimension
         for z in range(np.shape(new_data)[2]):
             cur_dist += DTWDistance(i[:, z], j[:, z], w)
-        distances[ind, c_ind] = cur_dist
+        distances_DTW[ind, c_ind] = cur_dist
     print('First row completed', ind, c_ind)
 print('Distances calculated')
-print(distances)
+print(distances_DTW)
+
+new_data = DDTW_data
+
+# Calculate distances using DTW
+distances_DDTW = np.zeros((np.shape(new_data)[0], np.shape(new_data)[0]))
+# window size
+w = 5
+
+for ind, i in enumerate(new_data):
+    for c_ind, j in enumerate(new_data):
+        cur_dist = 0.0
+        # Find sum of distances along each dimension
+        for z in range(np.shape(new_data)[2]):
+            cur_dist += DTWDistance(i[:, z], j[:, z], w)
+            distances_DDTW[ind, c_ind] = cur_dist
+    print('First row completed', ind, c_ind)
+print('Distances calculated')
+print(distances_DDTW)
+
 
 sum_distance_list = list()
 min_centroids_distance_list = list()
 cluster_list = list()
 centroids_list = list()
-for num_cluster in range(4, 5):
+
+num_cluster = 4
+
+for para in range(0, 11):
+    parameter = para / 10
+    distances = (1 - parameter) * distances_DTW + parameter * distances_DDTW
+
     clusters, curr_medoids = cluster(distances, num_cluster)
     print('Mediods are :')
     print(curr_medoids)
@@ -160,18 +183,11 @@ for num_cluster in range(4, 5):
     # print(sum_distance)
     sum_distance_list.append(sum_distance)
 
-print('--------------------------')
-print(min_centroids_distance_list)
-print(sum_distance_list)
-# print("validity:")
-# print(sum_distance_list[0]/min_centroids_distance_list[0])
-print('--------------------------')
+plt.plot(range(0, 11), sum_distance_list)
+plt.show()
 
-# plt.plot(range(4, 10), sum_distance_list)
-# plt.show()
-
-# plt.plot(range(4, 10), min_centroids_distance_list)
-# plt.show()
+plt.plot(range(0, 11), min_centroids_distance_list)
+plt.show()
 
 # num_cluster = 6 might be the best4
 validity = list()
@@ -180,36 +196,17 @@ for s, m in zip(sum_distance_list, min_centroids_distance_list):
     validity.append(v)
 
 print(validity)
-# plt.plot(range(4, 10), validity)
-# plt.show()
+plt.plot(range(0, 11), validity)
+plt.show()
 
 min_validity_index = validity.index(min(validity))
-# print(cluster_list[min_validity_index])
 print(centroids_list[min_validity_index])
 
 df['new_type'] = cluster_list[min_validity_index]
 df.drop(labels=['new_type'], axis=1, inplace=True)
 df.insert(3, 'new_type', cluster_list[min_validity_index])
-# df.insert(3, 'new_type', cluster_list[min_validity_index])
-filename = 'timeseries_period_new_type_DDTW.csv'
+filename = 'timeseries_period_new_type_DDTW+DTW.csv'
 df.to_csv(filename, encoding="utf_8_sig")
 
-# type_df = pd.read_csv('citytree_type_1990_to_2015.csv')
-# type_df['new_type'] = cluster_list[min_validity_index]
-# new_type = type_df['new_type']
-# type_df.drop(labels=['Unnamed: 0'], axis=1, inplace=True)
-# type_df.drop(labels=['Unnamed: 0.1'], axis=1, inplace=True)
-# type_df.drop(labels=['new_type'], axis=1, inplace=True)
-# type_df.insert(1, 'new_type', new_type)
-# type_df.to_csv('normalization_type.csv', encoding="utf_8_sig")
-#
-# df['new_type'] = cluster_list[0]
-# new_type = df['new_type']
-# df.drop(labels=['Unnamed: 0.1.1'], axis=1, inplace=True)
-# df.drop(labels=['new_type'], axis=1, inplace=True)
-# df.insert(1, 'new_type', new_type)
-# df.to_csv('labelled_new_type_4.csv', encoding="utf_8_sig")
-#
-#
-# df.insert(3, 'new_type', cluster_list[min_validity_index])
-# df.to_csv('timeseries_period_new_type_2.csv', encoding="utf_8_sig")
+
+

@@ -80,11 +80,11 @@ def k_means_clust(data, num_clust, num_iter, w=5):
 #
 # print(type(data))
 
-df = pd.read_csv('new_data.csv')
+# df = pd.read_csv('new_data_clustering.csv')
+df = pd.read_csv('data_type_clustering.csv')
 # new_df = df[df.CityID != 3536].copy()
-new_df = df[(df.CityID != 3536) & (df.CityID != 3489) & (df.CityID != 3326)].copy()
 # print(len(new_df))
-data = df.iloc[:, 2:].values
+data = df.iloc[:, 4:].values
 # print(data)
 data_list = list()
 for row in data:
@@ -117,7 +117,7 @@ sum_distance_list = list()
 min_centroids_distance = list()
 data_target_list = list()
 centroids_list = list()
-for num_clust in range(2, 8):
+for num_clust in range(4, 5):
     data_target = np.zeros(len(data))
     centroids, assignments = k_means_clust(data, num_clust, 10, 4)
     print(centroids)
@@ -152,20 +152,20 @@ for num_clust in range(2, 8):
 #         plt.plot(i)
 #     plt.show()
 
-plt.plot(range(2, 8), sum_distance_list)
-plt.show()
+# plt.plot(range(2, 8), sum_distance_list)
+# plt.show()
+#
+# plt.plot(range(2, 8), min_centroids_distance)
+# plt.show()
 
-plt.plot(range(2, 8), min_centroids_distance)
-plt.show()
-
-validity = list()
-for s, m in zip(sum_distance_list, min_centroids_distance):
-    v = s / m
-    validity.append(v)
-
-print(validity)
-plt.plot(range(2, 8), validity)
-plt.show()
+# validity = list()
+# for s, m in zip(sum_distance_list, min_centroids_distance):
+#     v = s / m
+#     validity.append(v)
+#
+# print(validity)
+# plt.plot(range(2, 8), validity)
+# plt.show()
 
 
 # data_target = np.zeros(len(data))
@@ -179,17 +179,24 @@ plt.show()
 #         plt.plot(i)
 #     plt.show()
 
-min_validity_index = validity.index(min(validity))
-print(centroids_list[min_validity_index])
-df['type'] = data_target_list[min_validity_index]
+# min_validity_index = validity.index(min(validity))
+# print(centroids_list[min_validity_index])
+# df['type'] = data_target_list[min_validity_index]
 #
-df.to_csv('new_data_type.csv', encoding="utf_8_sig")
+df['new_type'] = data_target_list[0]
+new_type = df['new_type']
+df.drop(labels=['Unnamed: 0'], axis=1, inplace=True)
+df.drop(labels=['Unnamed: 0.1'], axis=1, inplace=True)
+df.drop(labels=['new_type'], axis=1, inplace=True)
+df.insert(1, 'new_type', new_type)
+df.to_csv('data_new_type_clustering.csv', encoding="utf_8_sig")
 
-type_df = pd.read_csv('citytree_type_1990_to_2015.csv')
-type_df['new_type'] = data_target_list[min_validity_index]
-new_type = type_df['new_type']
-type_df.drop(labels=['Unnamed: 0'], axis=1, inplace=True)
-type_df.drop(labels=['Unnamed: 0.1'], axis=1, inplace=True)
-type_df.drop(labels=['new_type'], axis=1, inplace=True)
-type_df.insert(1, 'new_type', new_type)
-type_df.to_csv('new_type.csv', encoding="utf_8_sig")
+# type_df = pd.read_csv('citytree_type_1990_to_2015.csv')
+# type_df['new_type'] = data_target_list[0]
+# new_type = type_df['new_type']
+# type_df.drop(labels=['Unnamed: 0'], axis=1, inplace=True)
+# type_df.drop(labels=['Unnamed: 0.1'], axis=1, inplace=True)
+# type_df.drop(labels=['new_type'], axis=1, inplace=True)
+# type_df.insert(1, 'new_type', new_type)
+# type_df.to_csv('new_type.csv', encoding="utf_8_sig")
+
